@@ -71,8 +71,8 @@ async function loadComposition() {
 /*
  * Function: parseComposition
  * --------------------------
- * Accepts composition object and parses sequential 
- * information necessary to play the piece.
+ * Accepts composition object and parses, using MIDI
+ * events, the actions necessary to play the piece.
  */
 function parseComposition(obj) { // Assumes type 0 MIDI file.
     const song = [];
