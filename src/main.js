@@ -45,12 +45,12 @@ async function main() {
      * dictionary object when the user clicks play.
      */
     function playAction() {
-        for (let event of song) {
-            if (event.type !== "on") continue;
-            const audio = audioToMIDI[event.midi];
+        for (let action of song) {
+            if (action.type !== "on") continue;
+            const audio = audioToMIDI[action.midi];
             if (!audio) continue;
 
-            setTimeout(() => audio.play(), event.startTime * 1000);
+            setTimeout(() => audio.play(), action.startTime * 1000);
         }
     }
     playButton.addEventListener("click", playAction);
