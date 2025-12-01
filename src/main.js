@@ -47,10 +47,13 @@ async function main() {
     function playAction() {
         for (let action of song) {
             if (action.type !== "on") continue;
-            const audio = audioToMIDI[action.midi];
-            if (!audio) continue;
+            const base = audioToMIDI[action.midi];
+            if (!base) continue;
 
-            setTimeout(() => audio.play(), action.startTime * 1000);
+            setTimeout(() => {
+                const voice = base.cloneNode(true);
+                voice.play();
+            }, action.startTime * 1000);
         }
     }
     playButton.addEventListener("click", playAction);
