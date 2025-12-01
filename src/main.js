@@ -8,7 +8,7 @@ import './style.css';
 
 import MidiParser from "midi-parser-js";
 
-function main() {
+async function main() {
     const piano = document.getElementById("piano");
     const playButton = document.getElementById("play-button");
 
@@ -18,7 +18,9 @@ function main() {
 
     layKeys(piano, keys);
     mapMIDI();
-    loadComposition();
+
+    const composition = await loadComposition();
+    const song = parseComposition(composition);
 
     /*
      * Function: mapMIDI
@@ -43,12 +45,12 @@ function main() {
      * dictionary object when the user clicks play.
      */
     function playAction() {
-        for (let event of SONG) {
-            setTimeout(() => {
-                // let key = keyToMIDI[event.midi];
-                // key.classList operations
-                audioToMIDI[event.midi].play();
-            }, event.time * 1000);
+        for (let event of song) {
+            if (event.type !== "on") continue;
+            const audio = audioToMIDI[event.midi];
+            if (!audio) continue;
+
+            setTimeout(() => audio.play(), event.startTime * 1000);
         }
     }
     playButton.addEventListener("click", playAction);
@@ -60,11 +62,51 @@ function main() {
  * Fetches MIDI file and parses composition into JSON.
  */
 async function loadComposition() {
-    const response = await fetch("/public/brahmsUngarischerTanzNo1.mid");
+    const response = await fetch("/brahmsUngarischerTanzNo1.mid");
     const arrayBuffer = await response.arrayBuffer();
 
-    let composition = MidiParser.parse(new Uint8Array(arrayBuffer));
-    console.log(composition);
+    return MidiParser.parse(new Uint8Array(arrayBuffer));
+}
+
+/*
+ * Function: parseComposition
+ * --------------------------
+ * Accepts composition object and parses sequential 
+ * information necessary to play the piece.
+ */
+function parseComposition(obj) { // Assumes type 0 MIDI file.
+    const song = [];
+    const events = obj.track[0].event;
+    let absTick = 0;
+
+    for (let event of events) {
+        absTick += event.deltaTime;
+        if (event.data?.length === 2) {
+            song.push(getAction(obj, event, absTick));
+        }
+    }
+
+    return song;
+}
+
+/*
+ * Function: getAction
+ * -------------------
+ * Accepts composition object, current event, and
+ * absolute time in ticks, and returns information
+ * on action to take (start time, note, press/release).
+ */
+function getAction(obj, event, absTick) {
+    const ppq = obj.timeDivision;                   // Pulses per quarter note.
+    const absTime = absTick * (C.MPQ / 1e6 / ppq);  // Calculates absolute time in seconds from ticks.
+
+    const [midi, velocity] = event.data;
+    const type =
+        event.type === 9 && velocity > 0 ? "on" :
+        event.type === 8 || velocity === 0 ? "off" :
+        null;
+
+    return {startTime: absTime, midi, type};
 }
 
 /*

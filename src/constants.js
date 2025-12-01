@@ -25,6 +25,8 @@ export const MIDI_N = [
     "105", "106", "107", "108"
 ];
 
+export const MPQ = 333333; // Microseconds per quarter note.
+
 export const WHITE_KEY_WIDTH = 10;
 export const WHITE_KEY_HEIGHT = 59;
 export const GAP_FACTOR = 1.2;
