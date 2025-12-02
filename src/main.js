@@ -14,27 +14,34 @@ async function main() {
 
     const keys = [];
     const keyToMIDI = {};
-    const audioToMIDI = {};
+    const bufferToMIDI = {};
 
     layKeys(piano, keys);
-    mapMIDI();
 
     const composition = await loadComposition();
     const song = parseComposition(composition);
+    let audioC = null;
+    audioEngine();
 
     /*
-     * Function: mapMIDI
-     * -----------------
-     * Builds objects that map MIDI
-     * numbers to key and audio elements.
+     * Function: audioEngine
+     * ---------------------
+     * Creates audio buffers for notes to be played,
+     * and builds objects that map MIDI numbers 
+     * to their respective keys and audio buffers.
      */
-    function mapMIDI() {
+    async function audioEngine() {
+        audioC = new AudioContext();
         const getKeyByMidi = midi => keys.find(k => k.midi == midi);
-    
+
         for (let midi of C.MIDI_N) {
             let key = getKeyByMidi(midi);
             keyToMIDI[midi] = key;
-            audioToMIDI[midi] = new Audio(`/notes/${key.note}.mp3`);
+            
+            const response = await fetch(`/notes/${key.note}.mp3`);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioC.decodeAudioData(arrayBuffer);
+            bufferToMIDI[midi] = audioBuffer;
         }
     }
 
@@ -45,15 +52,17 @@ async function main() {
      * dictionary object when the user clicks play.
      */
     function playAction() {
+        const beginning = audioC.currentTime + 0.1;
+
         for (let action of song) {
             if (action.type !== "on") continue;
-            const base = audioToMIDI[action.midi];
-            if (!base) continue;
+            const buffer = bufferToMIDI[action.midi];
+            if (!buffer) continue;
 
-            setTimeout(() => {
-                const voice = base.cloneNode(true);
-                voice.play();
-            }, action.startTime * 1000);
+            const src = audioC.createBufferSource();
+            src.buffer = buffer;
+            src.connect(audioC.destination);
+            src.start(beginning + action.startTime);
         }
     }
     playButton.addEventListener("click", playAction);
