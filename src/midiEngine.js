@@ -7,11 +7,11 @@ import MidiParser from "midi-parser-js";
 import * as C from './constants.js';
 
 /*
- * Function: loadComposition
- * -------------------------
- * Fetches MIDI file and parses composition into JSON.
+ * Function: loadMidi
+ * ------------------
+ * Fetches MIDI file and parses into JSON.
  */
-export async function loadComposition(mf) {
+export async function loadMidi(mf) {
     const response = await fetch(mf);
     const arrayBuffer = await response.arrayBuffer();
 
@@ -21,30 +21,31 @@ export async function loadComposition(mf) {
 /*
  * Function: parseComposition
  * --------------------------
- * Accepts composition object and parses, using MIDI
+ * Accepts midi data object and parses, from its
  * events, the actions necessary to play the piece.
  */
 export function parseComposition(obj) {             
-    const song = [];
+    const comp = [];
     const events = obj.track[0].event;              // Assumes type 0 MIDI file.
     let absTick = 0;
 
     for (let event of events) {
         absTick += event.deltaTime;
         if (event.data?.length === 2) {
-            song.push(getAction(obj, event, absTick));
+            comp.push(getAction(obj, event, absTick));
         }
     }
 
-    return song;
+    return comp;
 }
 
 /*
  * Function: getAction
  * -------------------
- * Accepts composition object, current event, and
+ * Accepts midi data object, current event, and
  * absolute time in ticks, and returns information
- * on action to take (start time, note, press/release).
+ * on what to play, including note, gain (i.e. volume), 
+ * start time, and/or type (on/off)).
  */
 function getAction(obj, event, absTick) {
     const ppq = obj.timeDivision;                   // Pulses per quarter note.
@@ -67,8 +68,9 @@ function getAction(obj, event, absTick) {
 /*
  * Function: audioEngine
  * ---------------------
- * Creates audio buffers for notes to be played,
- * and builds objects that map MIDI numbers 
+ * Accepts array of key elements, creates 
+ * audio buffers for the notes to be played,
+ * and builds objects that map MIDI numbers
  * to their respective keys and audio buffers.
  */
 export async function initAudio(keys) {
@@ -94,13 +96,14 @@ export async function initAudio(keys) {
 /*
  * Function: playAction
  * --------------------
- * Event handler to play song from MIDI-like 
- * dictionary object when the user clicks play.
+ * Accepts audio context, composition to play,
+ * and map of MIDI numbers to audio buffers,
+ * to play piece upon user clicking "play".
  */
-export function playAction(audioC, song, bufferToMIDI) {
+export function playAction(audioC, comp, bufferToMIDI) {
     const beginning = audioC.currentTime + 0.1;
 
-    for (let [index, action] of song.entries()) {
+    for (let [index, action] of comp.entries()) {
         if (action.type !== "on") continue;
         const buffer = bufferToMIDI[action.midi];
         if (!buffer) continue;
@@ -115,12 +118,12 @@ export function playAction(audioC, song, bufferToMIDI) {
         gainNode.connect(audioC.destination);
         src.start(beginning + action.startTime);
 
-        const offIdxRel = song.slice(index).findIndex(
+        const offIdxRel = comp.slice(index).findIndex(
             a => a.type === "off" && a.midi === action.midi
         );
         if (offIdxRel === -1) continue;
         
-        action.endTime = song[index + offIdxRel].startTime;
+        action.endTime = comp[index + offIdxRel].startTime;
         action.duration = action.endTime - action.startTime;
     }
 }

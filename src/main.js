@@ -4,7 +4,7 @@
  */
 
 import * as C from './constants.js';
-import {loadComposition, parseComposition, initAudio, playAction} from './midiEngine.js';
+import {loadMidi, parseComposition, initAudio, playAction} from './midiEngine.js';
 import './style.css';
 
 import MidiParser from "midi-parser-js";
@@ -17,12 +17,12 @@ async function main() {
     layKeys(piano, keys);
 
     let midiFile = "/brahmsUngarischerTanzNo1.mid";
-    const composition = await loadComposition(midiFile);
-    const song = parseComposition(composition);
+    const midiData = await loadMidi(midiFile);
+    const composition = parseComposition(midiData);
     const {audioC, keyToMIDI, bufferToMIDI} = await initAudio(keys);
 
     playButton.addEventListener("click", () => {
-        playAction(audioC, song, bufferToMIDI)
+        playAction(audioC, composition, bufferToMIDI)
     });
 }
 
