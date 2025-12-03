@@ -1,0 +1,27 @@
+body {
+  background-color: #d0c5b3;
+}
+
+#piano {
+  position: absolute;
+  width: 624px;
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+}
+
+.white-key {
+  position: absolute;
+  width: 10px;
+  height: 59px;
+  z-index: 1;
+  background-image: url("/images/whiteKey.jpeg");
+}
+
+.black-key {
+  position: absolute;
+  width: 7px;
+  height: 41.3px;
+  z-index: 2;
+  background-image: url("/images/blackKey.jpeg");
+}
