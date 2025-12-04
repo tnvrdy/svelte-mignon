@@ -3,12 +3,17 @@
   import * as C from './lib/constants.js';
   import './app.css';
   import {loadMidi, parseNotes, initAudio, playAction} from './lib/midiEngine.js';
+  import Roll from './lib/Roll.svelte';
 
   let keys = [];
   let notes = [];
   let audioC = null;
   let bufferToMIDI = {};
   let keyToMIDI = {};
+
+  let songStartTime = null;
+  let songProgress = null;
+  let isPlaying = false;
   
   /*
    * Function: createKeys
@@ -53,11 +58,21 @@
   });
 
   function onClickPlay() {
-    playAction(audioC, notes, bufferToMIDI);
+    songStartTime = playAction(audioC, notes, bufferToMIDI);
+    isPlaying = true;
+    requestAnimationFrame(time);
   }
+
+  function time() {
+    if (!isPlaying) return;
+    songProgress = audioC.currentTime - songStartTime;
+    requestAnimationFrame(time);
+  }
+
 </script>
 
 <main class="app-root">
+  <Roll {notes} {keyToMIDI} {songProgress} />
   <div id="piano">
     {#each keys as key}
       <div

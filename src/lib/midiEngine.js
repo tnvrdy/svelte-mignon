@@ -135,4 +135,6 @@ export function playAction(audioC, notes, bufferToMIDI) {
         gainNode.connect(audioC.destination);
         src.start(beginning + note.startTime);
     }
+
+    return beginning;
 }
