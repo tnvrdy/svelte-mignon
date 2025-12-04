@@ -8,6 +8,7 @@
   let notes = [];
   let audioC = null;
   let bufferToMIDI = {};
+  let keyToMIDI = {};
   
   /*
    * Function: createKeys
@@ -48,6 +49,7 @@
     const audioEngine = await initAudio(keys);
     audioC = audioEngine.audioC;
     bufferToMIDI = audioEngine.bufferToMIDI;
+    keyToMIDI = audioEngine.keyToMIDI;
   });
 
   function onClickPlay() {
