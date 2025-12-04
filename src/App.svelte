@@ -10,6 +10,7 @@
   let audioC = null;
   let bufferToMIDI = {};
   let keyToMIDI = {};
+  let activeNotes = [];
 
   let songStartTime = null;
   let songProgress = 0;
@@ -28,7 +29,7 @@
 
     for (let n = 0; n < C.NOTES.length; n++) {
       const note = C.NOTES[n];
-      const midi = C.MIDI_N[n];
+      const midi = Number(C.MIDI_N[n]);
       const isBlack = note.includes("b");
 
       let leftX = null;
@@ -66,6 +67,12 @@
   function time() {
     if (!isPlaying) return;
     songProgress = audioC.currentTime - songStartTime;
+
+    activeNotes = notes.filter(n => {
+      return songProgress >= n.startTime && songProgress <= n.endTime;
+    });
+    // console.log(activeNotes);
+
     requestAnimationFrame(time);
   }
 
@@ -77,7 +84,11 @@
     <div id="piano">
       {#each keys as key}
         <div
-          class={`key ${key.isBlack ? 'black-key' : 'white-key'}`}
+          class={
+            `key 
+            ${key.isBlack ? 'black-key' : 'white-key'} 
+            ${activeNotes.find(n => n.midi === key.midi) ? 'active' : ''}`
+          }
           style={`left: ${key.leftX}px;`}
         ></div>
       {/each}

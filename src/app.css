@@ -24,6 +24,7 @@ body {
   height: 59px;
   z-index: 2;
   background-image: url("/images/whiteKey.jpeg");
+  box-shadow: 5px 5px 7px rgba(0, 0, 0, 0.5);
 }
 
 .black-key {
@@ -32,6 +33,12 @@ body {
   height: 41.3px;
   z-index: 3;
   background-image: url("/images/blackKey.jpeg");
+  box-shadow: 5px 5px 7px rgba(0, 0, 0, 0.5);
+}
+
+.key.active {
+  filter: brightness(1.2);
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 #roll {
