@@ -5,10 +5,11 @@ body {
 }
 
 .container {
-  position: relative;
-  top: 0px;
+  position: absolute;
+  top: 6px;
   width: 624px;
-  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 #piano {
@@ -74,4 +75,15 @@ h3 {
   text-align: center;
   line-height: 1.2;
   top: 490px;
+}
+
+button {
+  position: absolute;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  left: 50%;
+  top: 65%;
+  transform: translateX(-50%);
 }

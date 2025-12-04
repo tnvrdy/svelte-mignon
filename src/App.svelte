@@ -71,7 +71,6 @@
     activeNotes = notes.filter(n => {
       return songProgress >= n.startTime && songProgress <= n.endTime;
     });
-    // console.log(activeNotes);
 
     requestAnimationFrame(time);
   }
@@ -94,9 +93,10 @@
       {/each}
     </div>
   </div>
-
-  <button id="play-button" on:click={onClickPlay}>Play</button>
   <h3>. ݁₊ ⊹ . ݁˖ . Steinway Welte-Mignon . ݁₊ ⊹ . ݁˖ . 
     <br>⋆⭒˚.⋆ Reproducing Piano ⋆⭒˚.⋆
   </h3>
+  <button id="play-button" on:click={onClickPlay}>
+    <img src="/images/playRollButton.png" alt="Play"/>
+  </button>
 </main>
