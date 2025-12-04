@@ -44,6 +44,8 @@ body {
 
 .tile {
   position: absolute;
-  width: 10px;
-  background: #FFFFF0;
+  width: 9px;
+  background: rgba(255, 252, 240, 0.7);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
 }
