@@ -7,8 +7,11 @@
     let visibleNotes = [];
 
     $: visibleNotes = notes.filter(n => {
-
+        const timeTilOn = n.startTime - songProgress;
+        const timeTilOff = n.endTime - songProgress;
+        return timeTilOn < 5 && timeTilOff > 2;
     })
+    //console.log(visibleNotes);
 
 </script>
 
@@ -17,7 +20,7 @@
         {#each visibleNotes as note}
             <div 
                 class="tile"
-                style:left={`${(keyToMIDI[note.midi]).leftX}px`}
+                style:left={`${(keyToMIDI[note.midi])?.leftX}px`}
                 style:height={`${note.duration * ROLL_SPEED}px`}
                 style:transform={`translateY(${(note.startTime - songProgress) * ROLL_SPEED}px)`}
             ></div>
