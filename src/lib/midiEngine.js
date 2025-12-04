@@ -20,12 +20,12 @@ export async function loadMidi(mf) {
 
 /*
  * Function: parseNotes
- * --------------------------
+ * --------------------
  * Accepts midi data object and parses, from its
  * events, the actions necessary to play the piece.
  */
 export function parseNotes(obj) { 
-    const events = obj.track[0].event; // Assumes type 0 MIDI file.          
+    const events = obj.track[0].event;                  // Assumes type 0 MIDI file.          
     let notes = [];
     let absTick = 0;
     let activeNotes = new Map();
@@ -45,7 +45,13 @@ export function parseNotes(obj) {
 
             const {onTime, onGain} = activeStack.pop(); // Note-on event that pairs with this note-off event.
             const endTime = startTime;
-            notes.push({midi, gain: onGain, startTime: onTime, endTime, duration: endTime - startTime});
+            notes.push({
+                midi, 
+                gain: onGain, 
+                startTime: onTime, 
+                endTime, 
+                duration: endTime - startTime
+            });
         }
     }
     return notes;
@@ -60,8 +66,8 @@ export function parseNotes(obj) {
  * start time, and/or type (on/off)).
  */
 function getAction(obj, event, absTick) {
-    const ppq = obj.timeDivision;                   // Pulses per quarter note.
-    const absTime = absTick * (C.MPQ / 1e6 / ppq);  // Calculates absolute time in seconds from ticks.
+    const ppq = obj.timeDivision;                       // Pulses per quarter note.
+    const absTime = absTick * (C.MPQ / 1e6 / ppq);      // Calculates absolute time in seconds from ticks.
 
     const [midi, velocity] = event.data;
     const type =
@@ -72,7 +78,7 @@ function getAction(obj, event, absTick) {
     return {
         midi,
         type,
-        gain: Math.pow(velocity / 127, 2),          // Normalize and square velocity of note.
+        gain: Math.pow(velocity / 127, 2),              // Normalize and square velocity of note.
         startTime: absTime, 
     };
 }
