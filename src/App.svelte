@@ -12,7 +12,7 @@
   let keyToMIDI = {};
 
   let songStartTime = null;
-  let songProgress = null;
+  let songProgress = 0;
   let isPlaying = false;
   
   /*
@@ -72,14 +72,16 @@
 </script>
 
 <main class="app-root">
-  <Roll {notes} {keyToMIDI} {songProgress} />
-  <div id="piano">
-    {#each keys as key}
-      <div
-        class={`key ${key.isBlack ? 'black-key' : 'white-key'}`}
-        style={`left: ${key.leftX}px;`}
-      ></div>
-    {/each}
+  <div class="container">
+    <Roll {notes} {keyToMIDI} {songProgress} />
+    <div id="piano">
+      {#each keys as key}
+        <div
+          class={`key ${key.isBlack ? 'black-key' : 'white-key'}`}
+          style={`left: ${key.leftX}px;`}
+        ></div>
+      {/each}
+    </div>
   </div>
 
   <button id="play-button" on:click={onClickPlay}>Play</button>

@@ -2,12 +2,18 @@ body {
   background-color: #d0c5b3;
 }
 
+.container {
+  position: relative;
+  top: 0px;
+  width: 624px;
+  margin: 0 auto;
+}
+
 #piano {
   position: absolute;
   width: 624px;
-  left: 50%;
-  top: 60%;
-  transform: translate(-50%, -50%);
+  left: 0;
+  bottom: -400px;
 }
 
 .white-key {
@@ -26,9 +32,12 @@ body {
   background-image: url("/images/blackKey.jpeg");
 }
 
-.roll {
+#roll {
   position: absolute;
-  /*  */
+  left: 0;
+  right: 0;
+  bottom: -400px;
+  top: 50px;
   overflow: hidden;
   z-index: 1;
 }
